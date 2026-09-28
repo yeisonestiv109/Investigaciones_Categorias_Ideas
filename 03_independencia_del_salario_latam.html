@@ -1,0 +1,194 @@
+<title>Independencia del Salario LatAm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: two Word-sized sheets (US Letter, 8.5x11) on a desk; sheet 1 = executive summary in two columns, sheet 2 = maturity-signals table. */
+:root{
+  --desk:#e6e9ec; --paper:#ffffff; --ink:#18222d; --muted:#56626e; --rule:#d3d9df;
+  --accent:#0d5f73; --accent-soft:#e3f0f3;
+  --st-n:#2f5fb3; --st-n-bg:#e6edf9;
+  --st-c:#9a6a00; --st-c-bg:#fbf1d9;
+  --st-s:#a8452e; --st-s-bg:#f8e6e1;
+  --display:"Newsreader", Georgia, "Times New Roman", serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --desk:#0e1419; --paper:#172029; --ink:#e3e8ed; --muted:#9aa7b3; --rule:#2e3b47;
+  --accent:#63bfd3; --accent-soft:#1b3440;
+  --st-n:#8fb2f0; --st-n-bg:#1d2b45; --st-c:#e3b454; --st-c-bg:#3a2f14; --st-s:#ee937c; --st-s-bg:#3e231c;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --desk:#0e1419; --paper:#172029; --ink:#e3e8ed; --muted:#9aa7b3; --rule:#2e3b47;
+  --accent:#63bfd3; --accent-soft:#1b3440;
+  --st-n:#8fb2f0; --st-n-bg:#1d2b45; --st-c:#e3b454; --st-c-bg:#3a2f14; --st-s:#ee937c; --st-s-bg:#3e231c;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--desk);color:var(--ink);font-family:var(--body);font-size:10.6px;line-height:1.36;padding-block:28px;padding-inline:16px;margin:0}
+.stack{display:flex;flex-direction:column;align-items:center;gap:28px}
+.sheet{background:var(--paper);width:100%;max-width:816px;min-height:1056px;padding:36px 46px 28px;box-shadow:0 1px 2px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.08);display:flex;flex-direction:column;gap:10px}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+a:hover,a:focus-visible{border-bottom-color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header.mast{display:grid;grid-template-columns:1fr auto;align-items:end;gap:16px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:650;font-size:27px;line-height:1.05;margin:3px 0 0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-family:var(--display);font-weight:650;font-size:14px;margin:0 0 4px;text-wrap:balance;display:flex;align-items:baseline;gap:7px}
+h2 .n{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--accent)}
+.meta{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:right}
+.verdict{background:var(--accent-soft);padding:8px 12px;font-size:11.2px;line-height:1.4;margin:0}
+.verdict strong{color:var(--accent)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+.cols>section{min-width:0}
+ul{margin:0;padding-left:14px;display:flex;flex-direction:column;gap:2px}
+li::marker{color:var(--muted)}
+.tag{font-family:var(--mono);font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;padding:0 4px;border:1px solid var(--rule);color:var(--muted);vertical-align:1px;white-space:nowrap}
+.tag.op{border-color:var(--st-c);color:var(--st-c)}
+.tag.nv{border-color:var(--st-s);color:var(--st-s)}
+.stage{display:inline-block;font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;padding:1px 6px;white-space:nowrap}
+.s-n{color:var(--st-n);background:var(--st-n-bg)} .s-c{color:var(--st-c);background:var(--st-c-bg)} .s-s{color:var(--st-s);background:var(--st-s-bg)}
+.meter{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center}
+.terms{display:flex;flex-wrap:wrap;gap:4px}
+.terms span{font-family:var(--mono);font-size:10px;padding:1px 5px;border:1px solid var(--rule)}
+.terms span.pt{border-style:dashed}
+.full{grid-column:1/-1}
+footer{margin-top:auto;border-top:1px solid var(--rule);padding-top:7px;font-size:9.5px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tablewrap{overflow-x:auto;min-width:0}
+table{border-collapse:collapse;width:100%;font-size:10.5px}
+th{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:500;padding:6px 8px;border-bottom:2px solid var(--ink)}
+td{padding:6px 8px;border-bottom:1px solid var(--rule);vertical-align:top}
+td.num{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+td.src{font-size:9.5px}
+tbody tr.grp td{font-family:var(--mono);font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);border-bottom:1px solid var(--accent);padding-top:12px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:10px;color:var(--muted);align-items:center}
+@media (max-width:720px){
+  .sheet{min-height:0;padding:28px 18px}
+  .cols{grid-template-columns:1fr}
+  h1{font-size:25px}
+  .meta{text-align:left}
+  header.mast{grid-template-columns:1fr}
+  table{min-width:640px}
+}
+</style>
+
+<div class="stack">
+
+<!-- ============ HOJA 1 · RESUMEN EJECUTIVO ============ -->
+<article class="sheet" aria-label="Resumen ejecutivo">
+  <header class="mast">
+    <div>
+      <div class="eyebrow">Investigación 03 · Análisis de categoría · Resumen ejecutivo</div>
+      <h1>Independencia del Salario en Latinoamérica</h1>
+    </div>
+    <div class="meta">Corte: 28 sep 2026<br>Mercados: BR · MX · AR · CO · CL · UY<br>Hoja 1 de 2</div>
+  </header>
+
+  <p class="verdict"><strong>Veredicto:</strong> es una categoría <b>en crecimiento</b>, pero de dos velocidades. La <b>infraestructura</b> para dejar de depender solo del sueldo (cuentas que pagan rendimiento diario y apps para invertir) crece rápido y ya se está volviendo un producto igual en todas partes. El <b>discurso</b> de "libertad financiera" e "ingresos pasivos" está <b>saturado</b> y desgastado por las estafas. Lo que sigue <b>naciente</b> es un método medible para que el <b>asalariado de ingreso medio</b> cubra una parte de sus gastos sin trabajar.</p>
+
+  <div class="cols">
+    <section>
+      <h2><span class="n">1</span>Qué pasa ahora</h2>
+      <ul>
+        <li><b>Brasil:</b> el 36 % de la población (60,6 M) tiene inversiones financieras, frente al 31 % en 2021. <span class="tag">hecho</span> <a href="https://www.anbima.com.br/pt_br/noticias/anbima-lanca-a-nona-edicao-do-raio-x-do-investidor-brasileiro-36-da-populacao-aplica-em-produtos-financeiros.htm">ANBIMA</a></li>
+        <li>Los fondos inmobiliarios (FIIs) superan los 3 M de inversionistas y los R$ 200 mil M de patrimonio. <span class="tag">hecho</span> <a href="https://forbes.com.br/forbes-money/forbes-real-estate/2026/02/fiis-atingem-r-200-bi-e-b3-prepara-nova-fase-com-derivativos/">Forbes BR</a></li>
+        <li><b>Argentina:</b> 12,3 M personas y 24,6 M cuentas comitentes, un 35 % más que hace un año. <span class="tag">hecho</span> <a href="https://www.cronista.com/finanzas-mercados/financiar-empresas-en-la-argentina-el-desafio-del-mercado-de-capitales-para-2026/?outputType=amp-type">El Cronista</a></li>
+        <li><b>México:</b> Nu tiene 16 M de clientes y ya opera como banco. Las "cajitas" de Nu y Mercado Pago bajaron su rendimiento de 14–15 % a ~13 % anual. <span class="tag">hecho</span> <a href="https://nu.com/es/sala-de-prensa/compania/nu-holdings-ltd-reporta-los-resultados-financieros-del-segundo-trimestre-de-2026">Nu</a> · <a href="https://expansion.mx/finanzas-personales/2026/03/30/quien-da-mas-rendmientos-nu-klar-mercado-pago-cetes">Expansión</a></li>
+        <li><b>Colombia:</b> Nu supera los 5 M de clientes. trii tiene ~790 mil cuentas (310 mil ya invirtieron) y mueve más del 30 % del volumen de acciones de la BVC. <span class="tag">hecho</span> <a href="https://forbes.co/economia-y-finanzas/la-meta-es-volver-al-millon-de-colombianos-invirtiendo-en-la-bolsa-carlos-guayara-cofundador-de-trii">Forbes CO</a></li>
+        <li><b>Estafas:</b> en Uruguay, Conexión Ganadera prometía una renta fija del 7 %. Resultó un Ponzi con pasivos de USD 387 M, activos de apenas USD 115 M y ~4.300 ahorristas afectados. <span class="tag">hecho</span> <a href="https://www.infobae.com/america/america-latina/2026/07/23/la-mayor-estafa-ganadera-de-uruguay-dejo-un-rojo-de-usd-272-millones-justicia-confirmo-cifras-de-conexion-ganadera/">Infobae</a></li>
+        <li><b>El freno estructural:</b> la informalidad llega al 47 % en la región (<a href="https://www.ilo.org/publications/2025-labour-overview-latin-america-and-caribbean">OIT 2025</a>) y en Brasil el 82 % de quienes no ahorran dice que no le alcanza el ingreso. <span class="tag">hecho</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2><span class="n">2</span>Hacia dónde va (12–24 meses)</h2>
+      <ul>
+        <li><b>Las tasas bajan</b> (la Selic va en 13,75 % tras cinco recortes y Banxico en ~7 %). Las cuentas remuneradas rendirán menos y el ahorro buscará dividendos, ETFs y FIIs. <span class="tag op">proyección</span></li>
+        <li><b>Las superapps absorben la categoría.</b> Nu y Mercado Pago convierten "invertir" en un botón dentro de la app,. <span class="tag op">opinión</span></li>
+        <li><b>Los reguladores van tras los finfluencers.</b> La CVM (Brasil) lo tiene en su agenda de 2026, la CMF (Chile) anunció reglas y el AMV (Colombia) publicó un documento en 2026. <span class="tag">hecho</span> <a href="https://capitalaberto.com.br/regulamentacao/apos-regulatorio-intenso-em-2025-agenda-da-cvm-26-chama-atencao-sobre-influencers-e-fundos/">Capital Aberto</a></li>
+        <li><b>Las pensiones empujan el ahorro voluntario.</b> La reforma chilena de 2025 suma un 6 % de aporte del empleador y la Ley 2381 de Colombia fija un tope. <span class="tag">hecho</span> Esto abre demanda para complementar la pensión. <span class="tag op">opinión</span></li>
+        <li><b>Cambia el discurso.</b> De "libertad financiera" pasa a "segundo ingreso", "colchón" e "ingreso complementario". En Colombia, "trabajo remoto" ya supera en Google a "libertad financiera". <span class="tag op">lectura</span> <a href="https://www.infobae.com/colombia/2026/09/10/ni-libertad-financiera-ni-emprender-sin-capital-la-verdadera-busqueda-que-domina-el-interes-laboral-de-los-colombianos-en-google/">Infobae</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2><span class="n">3</span>Madurez por subsegmento</h2>
+      <div class="meter">
+        <span class="stage s-s">Saturada</span><span>Contenido de "libertad financiera", cursos e "ingresos pasivos"</span>
+        <span class="stage s-c">Crecimiento</span><span>Cuentas remuneradas y ahorro digital (ya entrando en comoditización)</span>
+        <span class="stage s-c">Crecimiento</span><span>Acceso minorista a la bolsa, a FIIs y a CEDEARs</span>
+        <span class="stage s-n">Naciente</span><span>Método medible de independencia parcial para asalariados. No encontré ningún player con cifras. <span class="tag nv">sin verificar</span></span>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="n">4</span>Players y referentes</h2>
+      <ul>
+        <li><b>Plataformas de ahorro:</b> Nu (139 M de clientes), Mercado Pago, Ualá, Klar, Cetes Directo (del Gobierno de México).</li>
+        <li><b>Brokers:</b> XP / BTG (BR), GBM, Bitso y Flink (MX), Cocos (AR, más de 2 M de usuarios), trii (CO), Hapi (regional), Fintual (CL/MX).</li>
+        <li><b>Referentes:</b> Moris Dieck (Forbes Top Creators 2025), Adrián Sáenz, Nathalia Arcuri (Me Poupe!), Thiago Nigro (Primo Rico). <span class="tag nv">audiencias sin verificar</span></li>
+        <li><b>Reguladores:</b> CVM, CNV, CMF, SFC / AMV, CNBV / CONDUSEF.</li>
+      </ul>
+    </section>
+
+    <section class="full">
+      <h2><span class="n">5</span>Vocabulario del mercado</h2>
+      <div class="terms">
+        <span>libertad financiera</span><span>ingresos pasivos</span><span>independencia financiera</span><span>vivir de rentas</span><span>ingreso extra</span><span>fondo de emergencia</span><span>cajitas / rendimiento diario</span><span>dividendos</span><span>CETES · FIBRAs</span><span>dólar MEP · CEDEARs · cuenta comitente</span><span>CDT · trii</span><span>APV</span><span>salir de la carrera de la rata</span><span>FIRE · side hustle · cashflow</span>
+        <span class="pt">renda passiva</span><span class="pt">viver de renda</span><span class="pt">liberdade financeira</span><span class="pt">FIIs</span><span class="pt">bola de neve</span><span class="pt">número mágico</span>
+      </div>
+      <p style="margin:6px 0 0;color:var(--muted)">Borde punteado = portugués (Brasil). <b style="color:var(--ink)">Hallazgo:</b> el mercado casi no usa la expresión "independencia del salario". Habla de "libertad financiera" o de "ingresos pasivos". <span class="tag op">observación, sin medición directa</span></p>
+    </section>
+  </div>
+
+  <footer><span>Etiquetas: <b>hecho</b> = dato con fuente · <b>opinión / proyección</b> = juicio del analista · <b>sin verificar</b> = no se encontró una fuente confiable</span><span>Detalle y señales en la hoja 2 →</span></footer>
+</article>
+
+<!-- ============ HOJA 2 · SEÑALES DE MADUREZ ============ -->
+<article class="sheet" aria-label="Tabla de señales de madurez">
+  <header class="mast">
+    <div>
+      <div class="eyebrow">Anexo · Señales de madurez</div>
+      <h1>Señales de madurez</h1>
+    </div>
+    <div class="meta">Hoja 2 de 2</div>
+  </header>
+  <div class="legend">
+    <span><span class="stage s-n">Naciente</span> pocos players, sin vocabulario común, demanda latente</span>
+    <span><span class="stage s-c">Crecimiento</span> la adopción crece rápido y entran jugadores grandes</span>
+    <span><span class="stage s-s">Saturada</span> producto indiferenciado, desconfianza, llega la regulación</span>
+  </div>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Señal</th><th>Dato</th><th>Tipo</th><th>Indica</th><th>Fuente</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="5">Adopción</td></tr>
+      <tr><td>Población que invierte (Brasil)</td><td class="num">36 % (60,6 M)<br><span style="font-weight:400;color:var(--muted)">31 % en 2021</span></td><td>Hecho</td><td><span class="stage s-c">Crecimiento</span></td><td class="src"><a href="https://www.anbima.com.br/pt_br/noticias/anbima-lanca-a-nona-edicao-do-raio-x-do-investidor-brasileiro-36-da-populacao-aplica-em-produtos-financeiros.htm">ANBIMA Raio X 2025</a></td></tr>
+      <tr><td>Personas con cuenta comitente (Argentina)</td><td class="num">12,3 M · +35 % a/a</td><td>Hecho</td><td><span class="stage s-c">Crecimiento</span></td><td class="src"><a href="https://www.cronista.com/finanzas-mercados/financiar-empresas-en-la-argentina-el-desafio-del-mercado-de-capitales-para-2026/?outputType=amp-type">El Cronista / Caja de Valores</a></td></tr>
+      <tr><td>Inversionistas en fondos de renta (FIIs, Brasil)</td><td class="num">&gt; 3 M · R$ 200 mil M</td><td>Hecho</td><td><span class="stage s-c">Crecimiento</span></td><td class="src"><a href="https://forbes.com.br/forbes-money/forbes-real-estate/2026/02/fiis-atingem-r-200-bi-e-b3-prepara-nova-fase-com-derivativos/">Forbes Brasil</a></td></tr>
+      <tr><td>Cuentas en bolsa con uso real (Colombia, trii)</td><td class="num">310 mil de 790 mil</td><td>Hecho</td><td><span class="stage s-n">Naciente</span></td><td class="src"><a href="https://forbes.co/economia-y-finanzas/la-meta-es-volver-al-millon-de-colombianos-invirtiendo-en-la-bolsa-carlos-guayara-cofundador-de-trii">Forbes Colombia</a></td></tr>
+
+      <tr class="grp"><td colspan="5">Oferta y competencia</td></tr>
+      <tr><td>Jugadores grandes en ahorro remunerado</td><td class="num">Nu: 16 M MX · 5 M CO</td><td>Hecho</td><td><span class="stage s-c">Crecimiento</span></td><td class="src"><a href="https://nu.com/es/sala-de-prensa/compania/nu-holdings-ltd-reporta-los-resultados-financieros-del-segundo-trimestre-de-2026">Nu, resultados 2T 2026</a></td></tr>
+      <tr><td>Rendimientos iguales entre apps (señal de comoditización)</td><td class="num">Nu ≈ MP ≈ 13 %</td><td>Hecho</td><td><span class="stage s-s">Saturada</span></td><td class="src"><a href="https://expansion.mx/finanzas-personales/2026/03/30/quien-da-mas-rendmientos-nu-klar-mercado-pago-cetes">Expansión</a></td></tr>
+      <tr><td>Competencia por precio ("día sin comisión")</td><td class="num">16.188 participantes</td><td>Hecho</td><td><span class="stage s-c">Crecimiento</span></td><td class="src"><a href="https://www.eltiempo.com/economia/sector-financiero/trii-apuesta-por-otro-dia-sin-comision-para-sumar-4-000-nuevos-inversionistas-en-colombia-3554600">El Tiempo</a></td></tr>
+      <tr><td>Oferta de "método" para el asalariado (independencia parcial)</td><td class="num">Sin players con cifras</td><td>Sin verificar</td><td><span class="stage s-n">Naciente</span></td><td class="src">Búsqueda propia; ver Investigación 02</td></tr>
+
+      <tr class="grp"><td colspan="5">Discurso, confianza y regulación</td></tr>
+      <tr><td>Intensidad de contenido de "ingresos pasivos"</td><td class="num">Alta</td><td>Opinión</td><td><span class="stage s-s">Saturada</span></td><td class="src">Ecosistema de creadores y portales de listas</td></tr>
+      <tr><td>Interés de búsqueda frente a necesidades inmediatas (Colombia)</td><td class="num">"trabajo remoto" &gt; "libertad financiera"</td><td>Hecho</td><td><span class="stage s-s">Saturada</span></td><td class="src"><a href="https://www.infobae.com/colombia/2026/09/10/ni-libertad-financiera-ni-emprender-sin-capital-la-verdadera-busqueda-que-domina-el-interes-laboral-de-los-colombianos-en-google/">Infobae (Google Trends)</a></td></tr>
+      <tr><td>Estafas que prometen renta fija</td><td class="num">USD 387 M en pasivos · ~4.300 víctimas</td><td>Hecho</td><td><span class="stage s-s">Saturada</span></td><td class="src"><a href="https://www.infobae.com/america/america-latina/2026/07/23/la-mayor-estafa-ganadera-de-uruguay-dejo-un-rojo-de-usd-272-millones-justicia-confirmo-cifras-de-conexion-ganadera/">Infobae</a> · <a href="https://elestimulo.com/elinteres/de-interes/2025-06-18/estafas-con-criptomonedas/">El Estímulo</a></td></tr>
+      <tr><td>Regulación de finfluencers</td><td class="num">CVM, CMF, AMV (2025–26)</td><td>Hecho</td><td><span class="stage s-s">Saturada</span></td><td class="src"><a href="https://capitalaberto.com.br/regulamentacao/apos-regulatorio-intenso-em-2025-agenda-da-cvm-26-chama-atencao-sobre-influencers-e-fundos/">Capital Aberto</a> · <a href="https://www.emol.com/noticias/Economia/2024/06/17/1133812/cmf-influencers-finanzas.html">Emol</a> · <a href="https://amvcolombia.org.co/wp-content/uploads/2026/03/DI-47-Finfluencers.pdf">AMV</a></td></tr>
+
+      <tr class="grp"><td colspan="5">Capacidad real de la demanda</td></tr>
+      <tr><td>Informalidad laboral en la región</td><td class="num">47 %</td><td>Hecho</td><td><span class="stage s-n">Naciente</span></td><td class="src"><a href="https://www.ilo.org/publications/2025-labour-overview-latin-america-and-caribbean">OIT Panorama Laboral 2025</a></td></tr>
+      <tr><td>No ahorra porque no le alcanza (Brasil)</td><td class="num">82 % (75 % en 2021)</td><td>Hecho</td><td><span class="stage s-n">Naciente</span></td><td class="src"><a href="https://www.anbima.com.br/pt_br/noticias/raio-x-brasil-pode-ter-18-milhoes-de-novos-investidores-e-investidoras-em-2025.htm">ANBIMA</a></td></tr>
+      <tr><td>Adultos que aguantarían más de 2 meses sin ingreso</td><td class="num">35 %</td><td>Hecho</td><td><span class="stage s-n">Naciente</span></td><td class="src"><a href="https://www.worldbank.org/en/publication/globalfindex/report">Global Findex 2025</a></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="margin:0;font-size:10.5px"><b>Cómo leer la tabla:</b> las señales de <b>oferta</b> y <b>adopción</b> apuntan a crecimiento. Las de <b>discurso</b> muestran saturación. Las de <b>capacidad</b> indican que la mayoría de la población todavía no puede entrar. La oportunidad está en el hueco entre la infraestructura, que ya es abundante, y un método para el asalariado de ingreso medio.</p>
+  <footer><span><b>Sin verificar:</b> número de usuarios de Mercado Pago, GBM y Cetes Directo en 2026 · audiencias actuales de cada finfluencer · volumen de búsquedas en toda la región</span><span>Investigación 03 · sep 2026</span></footer>
+</article>
+
+</div>
