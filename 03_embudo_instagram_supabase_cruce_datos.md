@@ -216,3 +216,66 @@ Fuente: [Ley 1581 de 2012](https://www.funcionpublica.gov.co/eva/gestornormativo
 - Meta **no publica** los umbrales de su detección de spam. Nadie, ni la guía ni yo, puede asegurarte que X links por hora son seguros.
 - Las cifras de "200 DMs por hora" y "25 mensajes idénticos" son de la comunidad, no oficiales.
 - El plan exacto de ManyChat y de Calendly que necesitas conviene confirmarlo en tu cuenta, porque cambian sus planes con frecuencia.
+
+---
+
+## 8. Actualización: tu flujo real (anuncio → palabra clave → filtro → link → formulario → Google Calendar)
+
+### 8.1 ¿Es seguro mandar el link por DM en este flujo?
+
+Tu flujo es el caso de uso para el que Meta diseñó la mensajería:
+- El lead llega desde un anuncio y **él escribe primero** (la palabra clave). Eso abre la ventana estándar de 24 h. [OFICIAL: [Meta: anuncios Click to Instagram](https://developers.facebook.com/documentation/ads-commerce/marketing-api/ad-creative/messaging-ads/click-to-instagram), [ManyChat: ventanas de mensajería](https://help.manychat.com/hc/en-us/articles/23358636027932-Understanding-messaging-windows)]
+- Tú respondes a lo que él pidió, con un botón de link, que es una función oficial de la API. [OFICIAL]
+- La política de Spam no prohíbe esto. Prohíbe links engañosos. [OFICIAL]
+
+Nadie puede darte "riesgo cero", porque Meta no publica sus umbrales. Estos son los controles concretos que sí dependen de ti:
+
+| Control | Por qué | Base |
+|---|---|---|
+| Mandar el link **dentro de las 24 h** y nunca en automatizaciones después de ese plazo | Pasadas las 24 h, las automatizaciones ya no se entregan. Después solo se puede escribir a mano. | OFICIAL |
+| **Dominio propio verificado** en Meta Business (Brand Safety → Domains) | Meta reconoce que el dominio es de tu empresa y controla quién edita las vistas previas de tus links. | [Meta: Domain Verification](https://www.facebook.com/business/help/286768115176155) |
+| La misma página para el rastreador de Meta y para el usuario (sin *cloaking*) | Meta abre los links para generar la vista previa. Mostrarle a Meta un contenido y al usuario otro está prohibido. | [OFICIAL: Spam](https://transparency.meta.com/policies/community-standards/spam/) |
+| Sin acortadores y con un solo link por mensaje | No es oficial, pero no cuesta nada. | COMUNIDAD |
+| El texto del mensaje dice qué es el link ("aquí haces tu diagnóstico") | Lo que realmente daña la cuenta son los **reportes de usuarios**. Un link que se explica solo genera menos desconfianza. | HIPÓTESIS razonable |
+| El paso del formulario a la agenda: **calendario incrustado en tu página** mejor que saltar a otro dominio | La política prohíbe redirigir automáticamente a otro dominio "sin acción del usuario". Enviar un formulario sí es una acción del usuario, así que tu redirección actual probablemente no la viola. Incrustar elimina la duda por completo. | OFICIAL + interpretación |
+| Página sin promesas tipo "sal de tus deudas en 30 días" | Ese tipo de promesa encaja en los patrones de la política de Fraude y Estafas. | [OFICIAL: Fraud & Scams](https://transparency.meta.com/policies/community-standards/fraud-and-scams/) |
+
+### 8.2 Cómo saber de quién es cada cita en Google Calendar
+
+**El problema:** la página de reservas de Google Calendar **no tiene parámetros de URL documentados** para recibir tu token. La cita llega a tu calendario sin saber de qué lead viene.
+
+**Lo que sí entrega Google:**
+- El formulario de reserva exige **nombre, apellido y email**.
+- Se le pueden agregar campos con **"Agregar elemento"**: *Teléfono* o un texto libre, y se pueden marcar como obligatorios.
+- Hay una opción para exigir **verificación del email** antes de confirmar la cita. Esa opción requiere un plan Workspace elegible.
+- Por la API, la cita trae el email del invitado en `attendees`, y la fecha de creación en `created`.
+
+Fuentes: [Google: crear agenda de citas](https://support.google.com/calendar/answer/10729749?hl=en), [Google Calendar API: Events](https://developers.google.com/workspace/calendar/api/v3/reference/events).
+
+> **Tienes que comprobarlo:** en qué campo exacto de la API aparecen las respuestas a los campos extra (normalmente en `description`). Haz una reserva de prueba y consulta el evento con `events.get` antes de programar el cruce.
+
+**Opción A: seguir con Google Calendar y cruzar por email y teléfono.**
+1. En tu formulario pide **email y teléfono** (además del token que ya viene en tu link). Guarda el email en minúsculas y el teléfono en formato internacional (+57...).
+2. En la agenda de Google activa el teléfono como campo obligatorio y, si tu plan lo permite, la verificación de email.
+3. Justo encima del calendario pon el texto: "Usa el mismo correo que pusiste en tu diagnóstico".
+4. Tu `pg_cron` trae las citas nuevas. Para no volver a descargar todo cada vez, usa `syncToken` (sincronización incremental), o cambia a notificaciones push con `events.watch`. Ver [Google: Push notifications](https://developers.google.com/workspace/calendar/api/guides/push).
+5. Cruza en este orden y guarda cómo se cruzó cada cita en `match_method`:
+   1. **Email** igual al de un lead.
+   2. Si no, **teléfono** igual.
+   3. Si no, **un solo lead** que haya hecho el diagnóstico en los 30 minutos anteriores a la creación de la cita. Solo se asigna si hay exactamente un candidato.
+   4. Si no, la cita queda **sin cruzar**, en una cola para revisión manual.
+6. Mide el % de citas que quedan sin cruzar. Si pasa de un nivel que te parezca aceptable, pasa a la opción B.
+
+**Opción B: cruce exacto sin perder Google Calendar.**
+Usa **Cal.com conectado a tu Google Calendar**. Las citas se siguen creando en tu Google Calendar, así que el equipo no cambia nada. Pero el link de la agenda lleva `?metadata[lead_token]=...&name=...&email=...`, y el webhook de Cal.com te devuelve el token. El cruce es exacto, sin adivinar por email.
+[OFICIAL: [Cal.com prefill](https://cal.com/help/bookings/prefill-fields), [Cal.com webhooks](https://cal.com/docs/developing/guides/automation/webhooks)]
+
+**Opción C: agenda propia.**
+Tu web consulta los horarios libres con `freebusy.query` y crea la cita con `events.insert`, guardando el `lead_id` en `extendedProperties.private`. El cruce es exacto y todo es tuyo, pero es la opción que más trabajo lleva (zonas horarias, cancelaciones, recordatorios).
+[OFICIAL: [Google Calendar API: Events](https://developers.google.com/workspace/calendar/api/v3/reference/events)]
+
+| | Precisión del cruce | Trabajo | Costo |
+|---|---|---|---|
+| A. Google Calendar + email/teléfono | Alta si la persona usa el mismo email; nunca del 100 % | Bajo (ya tienes `pg_cron`) | Ninguno extra |
+| B. Cal.com sobre Google Calendar | Exacta (token) | Bajo a medio | Confirmar el plan de Cal.com |
+| C. Agenda propia | Exacta (token) | Alto | Ninguno extra |
