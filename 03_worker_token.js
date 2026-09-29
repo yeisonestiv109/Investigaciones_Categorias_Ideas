@@ -4,10 +4,13 @@
 //   SUPABASE_URL          https://<proyecto>.supabase.co
 //   SUPABASE_SECRET_KEY   sb_secret_...   (NUNCA en el navegador)
 //   MANYCHAT_SECRET       cadena larga aleatoria; ManyChat la manda en el header X-Webhook-Secret
+//   SETTER_SECRET         clave que escribe el setter en la página /setter (distinta a la de ManyChat)
 //   SITE_ORIGIN           https://diagnostico.tudominio.com
 //
 // Rutas:
 //   POST /manychat/link   (lo llama ManyChat con External Request)  → { token, url }
+//   GET  /setter          página interna: el setter escribe el @ y copia el link
+//   POST /setter/link     (lo llama esa página)                      → { token, url, created }
 //   POST /api/start       (lo llama la página: nombre + email + autorización)
 //   POST /api/calc        (lo llama la página: entradas y resultado de la calculadora)
 
@@ -18,10 +21,14 @@ export default {
     const url = new URL(request.url);
 
     if (request.method === "OPTIONS") return cors(env, new Response(null, { status: 204 }));
+    if (request.method === "GET" && url.pathname === "/setter") {
+      return new Response(SETTER_PAGE, { headers: { "Content-Type": "text/html; charset=utf-8" } });
+    }
     if (request.method !== "POST") return json({ error: "method_not_allowed" }, 405);
 
     try {
       if (url.pathname === "/manychat/link") return await manychatLink(request, env);
+      if (url.pathname === "/setter/link") return await setterLink(request, env);
       if (url.pathname === "/api/start") return cors(env, await apiStart(request, env));
       if (url.pathname === "/api/calc") return cors(env, await apiCalc(request, env));
       return json({ error: "not_found" }, 404);
@@ -45,12 +52,40 @@ async function manychatLink(request, env) {
 
   const [lead] = await db(env, "GET",
     `leads?manychat_contact_id=eq.${contactId}&select=id,token,token_expires_at,status`);
+  const { token } = await issueToken(env, lead, { manychat_contact_id: contactId }, igUsername);
+  return json({ token, url: siteUrl(env, token) });
+}
 
+// ---------- Setter (envío manual desde la app de Instagram) ----------
+
+async function setterLink(request, env) {
+  if (!safeEqual(request.headers.get("X-Setter-Key") || "", env.SETTER_SECRET)) {
+    return json({ error: "unauthorized" }, 401);
+  }
+  const body = await request.json();
+  const ig = normIg(body.ig_username);
+  if (!ig) return json({ error: "bad_ig_username" }, 400);
+
+  // Busca el lead que tu Worker actual guardó cuando escribió la palabra clave.
+  const [lead] = await db(env, "GET",
+    `leads?ig_username=eq.${ig}&select=id,token,token_expires_at,status&order=updated_at.desc&limit=1`);
+  const { token, created } = await issueToken(env, lead, {}, ig);
+  return json({ token, url: siteUrl(env, token), created_new_lead: !lead, token_created: created });
+}
+
+// Usuario de Instagram: sin @, en minúsculas; letras, números, punto y guion bajo, máx. 30.
+function normIg(v) {
+  const u = String(v || "").trim().replace(/^@+/, "").toLowerCase();
+  return /^[a-z0-9._]{1,30}$/.test(u) ? u : null;
+}
+
+// ---------- Token (compartido por ManyChat y el setter) ----------
+
+async function issueToken(env, lead, newLeadFields, igUsername) {
   // Si ya tiene un token vigente, se reutiliza: el mismo lead siempre recibe el mismo link.
   if (lead && lead.token && new Date(lead.token_expires_at) > new Date()) {
-    return json({ token: lead.token, url: siteUrl(env, lead.token) });
+    return { token: lead.token, created: false };
   }
-
   const token = newToken();
   const expires = new Date(Date.now() + TOKEN_TTL_DAYS * 864e5).toISOString();
   const fields = { token, token_expires_at: expires, updated_at: new Date().toISOString() };
@@ -61,9 +96,9 @@ async function manychatLink(request, env) {
   if (lead) {
     await db(env, "PATCH", `leads?id=eq.${lead.id}`, fields);
   } else {
-    await db(env, "POST", "leads", { manychat_contact_id: contactId, ...fields });
+    await db(env, "POST", "leads", { ...newLeadFields, ...fields });
   }
-  return json({ token, url: siteUrl(env, token) });
+  return { token, created: true };
 }
 
 // ---------- Página ----------
@@ -158,3 +193,38 @@ function cors(env, res) {
   r.headers.set("Vary", "Origin");
   return r;
 }
+
+// ---------- Página interna del setter ----------
+
+const SETTER_PAGE = `<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Generar link</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:420px;margin:32px auto;padding:0 16px;background:#fafafa;color:#111}
+  input,button{width:100%;box-sizing:border-box;font-size:17px;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #ccc}
+  button{background:#111;color:#fff;border:0;cursor:pointer}
+  #out{margin-top:16px;padding:12px;border-radius:10px;background:#fff;border:1px solid #ddd;display:none;word-break:break-all}
+  .muted{color:#666;font-size:14px}
+</style></head><body>
+<h2>Link de diagnóstico</h2>
+<input id="key" type="password" placeholder="Clave del setter" autocomplete="current-password">
+<input id="ig" placeholder="@usuario del lead" autocapitalize="none" autocorrect="off">
+<button id="go">Generar y copiar</button>
+<div id="out"></div>
+<script>
+  const $ = id => document.getElementById(id);
+  try { $("key").value = localStorage.getItem("setterKey") || ""; } catch (e) {}
+  $("go").onclick = async () => {
+    const out = $("out"); out.style.display = "block"; out.textContent = "Generando...";
+    try { localStorage.setItem("setterKey", $("key").value); } catch (e) {}
+    const r = await fetch("/setter/link", { method: "POST",
+      headers: { "Content-Type": "application/json", "X-Setter-Key": $("key").value },
+      body: JSON.stringify({ ig_username: $("ig").value }) });
+    const d = await r.json();
+    if (!r.ok) { out.textContent = r.status === 401 ? "Clave incorrecta" : "Revisa el @ (" + d.error + ")"; return; }
+    try { await navigator.clipboard.writeText(d.url); } catch (e) {}
+    out.innerHTML = "<b>Copiado:</b><br>" + d.url +
+      (d.created_new_lead ? "<p class=muted>Este @ no estaba en la base; se creó el lead.</p>" : "") +
+      (d.token_created ? "" : "<p class=muted>Ya tenía un link vigente; es el mismo.</p>");
+  };
+</script></body></html>`;

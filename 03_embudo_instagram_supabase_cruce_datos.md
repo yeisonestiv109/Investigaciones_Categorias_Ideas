@@ -570,3 +570,59 @@ Hay **tres cosas distintas** que se suelen confundir:
 Fuentes: [Meta: verificar dominio](https://en-gb.facebook.com/business/help/321167023127050), [Meta: sobre la verificación de dominio](https://www.facebook.com/business/help/286768115176155), [Meta: verificación del negocio](https://www.facebook.com/business/help/2058515294227817), [Meta Verified](https://www.meta.com/meta-verified/), [TechCrunch: Meta Verified WhatsApp Business en Colombia](https://techcrunch.com/2024/06/06/meta-rolls-out-meta-verified-for-whatsapp-business-users-in-brazil-india-indonesia-and-colombia/).
 
 **Una sugerencia de confianza que no depende de Meta:** usa un **subdominio de tu marca** (`diagnostico.tumarca.com`), el mismo que aparece en tu bio y en tus anuncios. Que el link coincida con lo que la persona ya vio reduce la desconfianza, y con ella los reportes, que son el riesgo real (sección 8.1).
+
+---
+
+## 13. Envío manual: el setter manda el link desde Instagram, sin bot
+
+Si el setter escribe a mano (app de Instagram o bandeja de ManyChat), también necesita un link **distinto para cada lead**. La solución: una **página interna** en tu mismo Worker (`/setter`) donde el setter escribe el @ del lead y obtiene el link ya copiado.
+
+### 13.1 Cómo funciona
+
+```
+Lead escribe la palabra clave  →  tu Worker actual guarda el lead (con su @)
+Setter conversa y filtra a mano
+Setter abre  https://api.tudominio.com/setter   (en el celular o en el computador)
+   escribe  @maria.lopez_   →  toca "Generar y copiar"
+   el Worker busca ese @ en Supabase, crea el token (o reutiliza el vigente)
+   y devuelve  https://diagnostico.tudominio.com/?t=ZDP-gSDoeZuM   (ya copiado)
+Setter lo pega en el chat de Instagram con su mensaje
+```
+
+- **Por qué aquí sí se usa el @:** lo escribe **el setter**, que está viendo el chat, no el lead. El riesgo de que cambie en esos minutos es mínimo, y el lead nunca tiene que escribirlo.
+- **Si el @ no estaba en la base** (por ejemplo, tu Worker no lo guardó), la página crea el lead y te avisa.
+- **Si ya tenía un link vigente**, devuelve el mismo. Así no hay dos links para la misma persona.
+
+Probado con Node 22 contra un Supabase simulado:
+- sin la clave del setter → rechazado;
+- encuentra el lead aunque se escriba `@Maria.Lopez_` con arroba y mayúsculas;
+- reutiliza el token vigente;
+- crea el lead si no existe;
+- rechaza un @ inválido;
+- el link del setter funciona en la calculadora.
+
+**No lo probé contra tu Supabase real.**
+
+### 13.2 Qué hay que configurar
+
+```sql
+-- Un lead creado por el setter puede no tener contact_id de ManyChat
+alter table leads alter column manychat_contact_id drop not null;
+-- Guardar el @ normalizado (sin @, en minúsculas) para que la búsqueda coincida
+update leads set ig_username = lower(ltrim(trim(ig_username), '@')) where ig_username is not null;
+create index if not exists leads_ig_idx on leads (ig_username);
+```
+- **Tu Worker actual** debe guardar el @ de la misma forma a partir de ahora: sin `@` y en minúsculas.
+- **Nuevo secreto:** `wrangler secret put SETTER_SECRET`, una clave distinta a la de ManyChat que le das al setter.
+- **Recomendado:** pon la ruta `/setter` detrás de **Cloudflare Access** (Zero Trust → Access → Applications). Así solo entran los correos de tu equipo, además de la clave.
+
+### 13.3 El mensaje del setter
+
+Un ejemplo, sin montos ni urgencia, que explica qué es el link:
+
+> Listo, con lo que me contaste te preparé el diagnóstico. Son unas preguntas cortas y al final ves tu resultado:
+> https://diagnostico.tudominio.com/?t=ZDP-gSDoeZuM
+
+- **Un solo link por mensaje**, sin acortadores. Varía la redacción entre chats en vez de pegar siempre el mismo texto.
+- **En la app de Instagram el link se envía como texto** y se muestra con vista previa, no como botón. Por eso la verificación de dominio (sección 12) y las etiquetas Open Graph de la página (título, descripción e imagen) importan: son lo que el lead ve en esa vista previa.
+- **La ventana de 24 h aplica a la API y a las automatizaciones**, no a una persona escribiendo desde la app. Aun así, escribirle a quien no respondió sigue sumando al riesgo de reportes.
