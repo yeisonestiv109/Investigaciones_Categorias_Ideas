@@ -443,3 +443,130 @@ end $$;
 - **Cancelaciones y reprogramaciones.** Con sincronización incremental (`syncToken`), la API de Google también devuelve los eventos cancelados, con `status = 'cancelled'`. Actualiza `bookings.status` y usa el `id` del evento como `external_id` único, para no duplicar citas. [OFICIAL: [Google Calendar API: Events](https://developers.google.com/workspace/calendar/api/v3/reference/events)]
 - **Solo citas de la agenda de reservas.** Filtra para no cruzar reuniones internas. Por ejemplo, por el título que Google pone a las citas o usando un calendario secundario dedicado.
 - **Medición semanal:** qué % de citas cruzó por email, por teléfono, por ventana de tiempo y a mano. Si el cruce manual pasa de un nivel que te parezca aceptable, es la señal para pasar a Cal.com (cruce exacto por token, sección 8.2 opción B).
+
+---
+
+## 11. Implementación con ManyChat Pro + Cloudflare Worker + Supabase
+
+Arquitectura actual del negocio: ManyChat → Cloudflare Worker (guarda el lead en cuanto escribe) → Supabase. El token se genera **en ese mismo Worker**, así que no hacen falta Edge Functions de Supabase para esto.
+
+El código completo está en [`03_worker_token.js`](03_worker_token.js). Lo probé con Node 22 contra un Supabase simulado, en estos casos:
+- sin el secreto de ManyChat → rechazado;
+- el mismo lead recibe siempre el mismo token;
+- cada lead recibe uno distinto;
+- sin autorización de datos no se guarda el cálculo;
+- un token falso o vencido se rechaza;
+- al vencer se genera uno nuevo sin hacer retroceder el estado del lead.
+
+**No lo probé contra tu proyecto real de Supabase.**
+
+### 11.1 Cómo se genera un link distinto por lead
+
+1. Cuando el lead pasa el filtro, ManyChat llama al Worker con su `contact_id`.
+2. El Worker genera **9 bytes aleatorios** con `crypto.getRandomValues` (criptográficamente seguro) y los convierte a **12 caracteres base64url** (72 bits). Ejemplo: `om3KfsQENtYB`.
+3. Lo guarda en `leads.token`, con vencimiento a 14 días, y lo devuelve.
+4. Si el mismo lead vuelve a pedir el link, recibe **el mismo token** mientras siga vigente.
+
+**Así se ve el link** (cada lead tiene el suyo):
+```
+https://diagnostico.tudominio.com/?t=om3KfsQENtYB
+https://diagnostico.tudominio.com/?t=Di2uFt_WQ6f7
+```
+El link no contiene ni el @, ni el nombre, ni el ID. Quien lo vea no puede sacar ningún dato de él, y no se puede adivinar el de otra persona: habría 2⁷² combinaciones posibles.
+
+### 11.2 Cambios en Supabase
+
+```sql
+-- Tu Worker actual crea el lead cuando escribe (todavía sin token): el token debe poder ser NULL.
+alter table leads alter column token drop not null;
+alter table leads alter column token_expires_at drop not null;
+alter table leads alter column token_expires_at drop default;
+alter table leads add column if not exists name text;
+create unique index if not exists leads_token_uidx on leads (token) where token is not null;
+```
+Si tu tabla actual tiene otros nombres de columna, adapta el Worker a esos nombres, no al revés.
+
+### 11.3 Secretos del Worker
+
+```bash
+wrangler secret put SUPABASE_URL          # https://<proyecto>.supabase.co
+wrangler secret put SUPABASE_SECRET_KEY   # sb_secret_...  (Supabase → Settings → API Keys)
+wrangler secret put MANYCHAT_SECRET       # p. ej. salida de: openssl rand -hex 32
+wrangler secret put SITE_ORIGIN           # https://diagnostico.tudominio.com
+```
+- La clave `sb_secret_...` va en el header `apikey`, no en `Authorization: Bearer`, porque no es un JWT.
+- Supabase va a retirar las claves antiguas `anon` y `service_role` a finales de 2026.
+- Esa clave **nunca** puede ir en la página. Por eso la página habla con el Worker y no directo con Supabase.
+
+[OFICIAL: [Supabase API keys](https://supabase.com/docs/guides/getting-started/api-keys), [Migración a claves nuevas](https://supabase.com/docs/guides/getting-started/migrating-to-new-api-keys)]
+
+### 11.4 Configuración en ManyChat (paso a paso)
+
+1. **Settings → Fields → New User Field:** `lead_token` (Text) y `link_diagnostico` (Text).
+2. En el flujo, **después** de que el lead pasa el filtro, agrega **Actions → External Request**:
+   - **Method:** `POST`
+   - **URL:** `https://api.tudominio.com/manychat/link`, o la ruta de tu Worker.
+   - **Headers:** `X-Webhook-Secret` = el mismo valor de `MANYCHAT_SECRET`.
+   - **Body (JSON):**
+     ```json
+     { "contact_id": "{{contact_id}}", "ig_username": "{{instagram_username}}" }
+     ```
+     Inserta las variables con el selector de variables del editor. No las escribas a mano: así ManyChat pone el nombre exacto de cada campo.
+   - **Test Request:** revisa en la pestaña *Response* que llegue `{"token": "...", "url": "..."}`.
+   - **Response mapping:** `$.token` → `lead_token` y `$.url` → `link_diagnostico`.
+3. Mensaje siguiente, con un **botón** tipo URL:
+   - Texto, por ejemplo: "Aquí haces tu diagnóstico, toma unos 3 minutos".
+   - URL del botón: `https://diagnostico.tudominio.com/?t=` + el campo `lead_token` (insertado con el selector).
+4. **Condición de seguridad:** si `lead_token` está vacío (el Worker falló o tardó más de 10 s), manda un mensaje de respaldo y avisa al setter, **sin** botón roto.
+5. Prueba con tu propia cuenta. Abre el link y confirma que el `?t=` coincide con lo guardado en `leads.token`.
+
+[OFICIAL: [ManyChat External Request](https://help.manychat.com/hc/en-us/articles/14281285374364-Dev-Tools-External-request): mapeo con JSONPath, límite de 10 s]
+
+### 11.5 Lo que hace la página
+
+```html
+<script>
+  const API = "https://api.tudominio.com";
+  const t = new URLSearchParams(location.search).get("t");   // el token del link
+
+  // Paso 1: nombre + email + checkbox de autorización (sin marcar por defecto)
+  async function enviarInicio(name, email, consent) {
+    const r = await fetch(API + "/api/start", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ t, name, email, consent })
+    });
+    if (!r.ok) throw new Error((await r.json()).error);  // invalid_token → "pide un link nuevo por Instagram"
+  }
+
+  // Paso 2: calculadora
+  async function enviarCalculo(inputs, result) {
+    await fetch(API + "/api/calc", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ t, inputs, result })
+    });
+  }
+</script>
+```
+- Si el link llega sin `t` o con un token vencido, la página no debe fallar sin decir nada. Debe mostrar: "Este link venció, escríbenos 'DIAGNÓSTICO' por Instagram y te mandamos uno nuevo".
+- **No uses un analytics de terceros que guarde la URL completa** si te preocupa que el token quede en registros ajenos. Si lo usas, quita el `t` de la URL después de leerlo: `history.replaceState(null, "", location.pathname)`.
+
+---
+
+## 12. Verificación en Meta: qué existe, para qué sirve y qué no hace
+
+Hay **tres cosas distintas** que se suelen confundir:
+
+| | Qué es | Cómo se hace | Qué aporta | Qué NO está documentado que haga |
+|---|---|---|---|---|
+| **Verificación de dominio** | Demostrar que `tudominio.com` es de tu portafolio comercial | Meta Business Suite → Configuración → **Seguridad de la marca → Dominios → Agregar**. Tres métodos: **registro DNS TXT** (el más fácil con Cloudflare: DNS → Add record → TXT), meta-tag en el `<head>` de la página principal o archivo HTML en la raíz. | Solo tú controlas cómo se ven las vistas previas de tus links y evitas que otros abusen de tu dominio. | Meta no dice que baje el riesgo de spam en DMs. Es buena práctica, no un escudo. |
+| **Verificación del negocio** | Demostrar que la empresa existe legalmente | Business Suite → Configuración → **Centro de seguridad → Verificación del negocio**. Pide razón social, dirección, teléfono y documentos (en Colombia, normalmente Cámara de Comercio o RUT). | Habilita funciones que la exigen, como límites más altos en la API de WhatsApp. Le da a Meta información verificada del negocio. | Tampoco pone insignia visible en Instagram. |
+| **Meta Verified para empresas** | Suscripción paga que pone la **insignia azul** en el perfil | Desde la app o Business Suite, si tu cuenta es elegible en tu país. | Es lo único que **el usuario ve** como señal de confianza. Incluye protección contra suplantación y soporte. | La disponibilidad y el precio en Colombia para Instagram no están confirmados en fuentes oficiales que haya podido revisar. TechCrunch sí confirma el lanzamiento en **WhatsApp Business** en Colombia (2024). Revisa en la app si te aparece. |
+
+**Orden recomendado:**
+1. Dominio. Es gratis y toma 10 minutos con el TXT en Cloudflare. Meta indica que puede tardar hasta 72 h en propagarse.
+2. Negocio.
+3. Meta Verified, si aparece disponible y el precio te hace sentido.
+
+Fuentes: [Meta: verificar dominio](https://en-gb.facebook.com/business/help/321167023127050), [Meta: sobre la verificación de dominio](https://www.facebook.com/business/help/286768115176155), [Meta: verificación del negocio](https://www.facebook.com/business/help/2058515294227817), [Meta Verified](https://www.meta.com/meta-verified/), [TechCrunch: Meta Verified WhatsApp Business en Colombia](https://techcrunch.com/2024/06/06/meta-rolls-out-meta-verified-for-whatsapp-business-users-in-brazil-india-indonesia-and-colombia/).
+
+**Una sugerencia de confianza que no depende de Meta:** usa un **subdominio de tu marca** (`diagnostico.tumarca.com`), el mismo que aparece en tu bio y en tus anuncios. Que el link coincida con lo que la persona ya vio reduce la desconfianza, y con ella los reportes, que son el riesgo real (sección 8.1).
