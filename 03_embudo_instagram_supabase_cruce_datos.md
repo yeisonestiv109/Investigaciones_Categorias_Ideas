@@ -279,3 +279,28 @@ Tu web consulta los horarios libres con `freebusy.query` y crea la cita con `eve
 | A. Google Calendar + email/teléfono | Alta si la persona usa el mismo email; nunca del 100 % | Bajo (ya tienes `pg_cron`) | Ninguno extra |
 | B. Cal.com sobre Google Calendar | Exacta (token) | Bajo a medio | Confirmar el plan de Cal.com |
 | C. Agenda propia | Exacta (token) | Alto | Ninguno extra |
+
+---
+
+## 9. Diseño del formulario: nombre → calculadora → diagnóstico → contacto → agenda
+
+Propuesta del negocio: el formulario pide solo el nombre, la calculadora pide salario y deudas, se muestra el diagnóstico y la persona decide si agenda. Si agenda, escribe su email, su teléfono y su @ de Instagram.
+
+| Punto | Veredicto | Motivo |
+|---|---|---|
+| Mostrar el diagnóstico **antes** de pedir el contacto | Bien | La persona recibe valor antes de dar sus datos, y pide la llamada con información real. El costo: de quien no agenda no te queda email ni teléfono. Lo compensa el token (ver abajo). No encontré datos públicos confiables sobre cuánto cambia la conversión si el resultado se muestra antes o después de pedir el contacto. Si quieres saberlo, mídelo con un test A/B. |
+| Pedir **solo el nombre** al inicio | Bien | Es fricción mínima. Además, ManyChat no tiene el nombre de los contactos de Instagram por defecto (solo el @), así que es un dato que te sirve. |
+| **Pedir el @ de Instagram** | **No hace falta. Quítalo.** | El link que manda ManyChat ya trae el token, y el token ya dice quién es la persona, con su ID de contacto. Si le pides el @ escrito a mano: (1) se equivoca con arrobas, mayúsculas o letras; (2) el @ puede cambiar; (3) es un campo más que no le aporta nada. Si quieres mostrarlo, sácalo del token y muéstralo ya escrito ("¿Eres @fulano?"). |
+| Pedir email y teléfono **solo si va a agendar** | Bien, con una condición | Es el dato que usas para cruzar la cita. Con Google Calendar la persona **vuelve a escribir** el email en la página de reservas de Google (no se puede rellenar por URL), así que escribe el mismo dato dos veces. Con Cal.com se rellena solo y el cruce va por token (opción B de la sección 8.2). |
+| Quien calcula y **no** agenda | Recuperable | Sus datos de la calculadora quedan ligados al token, y el token al contacto de ManyChat. Así sabes que "calculó y no agendó". Si todavía está dentro de las 24 h desde su último mensaje, le puedes escribir por IG; después, solo a mano. |
+| Salario y deudas | Pedir autorización **antes** de guardarlos | La Ley 1581 exige autorización previa, expresa e informada para tratar datos personales. El checkbox va **en el paso de la calculadora**, no al final. Los datos financieros no están en la lista de "datos sensibles" del artículo 5, pero esa lista usa "tales como" y los datos financieros sí afectan la intimidad: trátalos con el mismo cuidado (acceso restringido, sin exponerlos en el navegador y sin enviarlos a herramientas de terceros). |
+
+### Qué llega a Supabase en cada paso
+
+| Paso | Qué escribe la página | Tabla |
+|---|---|---|
+| Abre el link `?t=` | Nada. Solo valida el token. | — |
+| Escribe el nombre y acepta el tratamiento de datos | `name`, `consent_at` | `leads` |
+| Envía la calculadora | entradas y resultado | `calculations` → `leads.status = 'calculo'` |
+| Toca "Quiero agendar" y escribe email y teléfono | `email`, `phone` (normalizados) | `leads` |
+| Reserva (webhook de Cal.com o `pg_cron` sobre Google) | cita + `match_method` | `bookings` → `leads.status = 'agendo'` |
