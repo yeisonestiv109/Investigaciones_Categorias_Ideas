@@ -626,3 +626,41 @@ Un ejemplo, sin montos ni urgencia, que explica qué es el link:
 - **Un solo link por mensaje**, sin acortadores. Varía la redacción entre chats en vez de pegar siempre el mismo texto.
 - **En la app de Instagram el link se envía como texto** y se muestra con vista previa, no como botón. Por eso la verificación de dominio (sección 12) y las etiquetas Open Graph de la página (título, descripción e imagen) importan: son lo que el lead ve en esa vista previa.
 - **La ventana de 24 h aplica a la API y a las automatizaciones**, no a una persona escribiendo desde la app. Aun así, escribirle a quien no respondió sigue sumando al riesgo de reportes.
+
+---
+
+## 14. ¿Los links únicos por lead son una señal de alerta para Meta?
+
+**Respuesta corta:** no hay ninguna fuente oficial que lo diga, y hay evidencia de que es una práctica normal. Lo que sí puede ser un problema es que la página **se comporte distinto según el token**.
+
+| Hecho | Fuente | Nivel |
+|---|---|---|
+| Meta documenta cómo **agregar parámetros de URL**, incluso dinámicos, a los links de sus propios anuncios | [Meta: Add URL parameters](https://www.facebook.com/business/help/1016122818401732), [Meta: dynamic URL parameters](https://www.facebook.com/business/help/2360940870872492) | OFICIAL |
+| Meta **agrega un identificador único por clic** (`fbclid`) a los links salientes de Facebook, Instagram y Messenger desde 2018 | [Wikipedia: Click identifier](https://en.wikipedia.org/wiki/Click_identifier) | COMUNIDAD (ampliamente documentado, sin página oficial de Meta revisada) |
+| Calendly recomienda poner un ID de usuario en `utm_content` | [Calendly UTM](https://help.calendly.com/hc/en-us/articles/1500005575121-How-to-track-conversions-with-UTM-parameters) | OFICIAL (del proveedor) |
+| La política de Spam prohíbe el **cloaking**: mostrarle a los sistemas de Meta un contenido distinto del que ve el usuario | [Meta: Spam](https://transparency.meta.com/policies/community-standards/spam/) | OFICIAL |
+| Hay estudios académicos sobre bloqueo de spam **por dominio** | [arXiv 2210.04088](https://arxiv.org/pdf/2210.04088) | Académico (no es de Meta) |
+
+**Interpretación:**
+- La reputación de un link se juega en el **dominio**, no en el `?t=`.
+- **Un solo dominio propio y estable es el escenario más sano.** Lo que sí se parece a un spammer es **rotar dominios**, usar acortadores o redirigir por cadenas de sitios.
+- **Corrección a lo que dije antes:** en respuestas anteriores dije que el token único "evita el patrón de la misma URL repetida". Tampoco hay evidencia de eso. Según lo documentado, el token **ni ayuda ni perjudica** frente a Meta. Su única función es de datos.
+
+### La regla que sí importa: misma página para todos
+
+Cuando se envía un link, los sistemas de Meta pueden abrirlo para generar la vista previa. Lo abren **con el mismo `?t=`**. Para que nunca parezca cloaking:
+
+1. **La página se ve igual con token válido, vencido o sin token.** Siempre muestra el formulario y la calculadora.
+2. **El token solo se usa al enviar los datos** (`/api/start`, `/api/calc`). Si en ese momento está vencido, se muestra el aviso "pide un link nuevo". Nada de redirigir ni de mostrar otra página al cargar.
+3. **Nada de detectar el user-agent** para mostrarle algo distinto a los bots.
+4. **Consecuencia para tus métricas:** si cuentas "link abierto" en la carga de la página, las visitas de los sistemas de Meta inflan el número. Cuenta desde el primer envío (`/api/start`), no desde la apertura.
+
+### Alternativa sin token: qué se gana y qué se pierde
+
+| | Link único (`?t=`) | Link genérico igual para todos |
+|---|---|---|
+| Riesgo frente a Meta según la documentación | Sin diferencia demostrada | Sin diferencia demostrada |
+| Saber de quién son los datos | Exacto | Depende de que el lead escriba bien su @ o su correo |
+| Seguimiento "calculó y no agendó" por lead | Sí | Solo si cruza por correo |
+
+**Recomendación:** mantener el token. El link genérico no tiene ninguna reducción de riesgo demostrada y sí tiene una pérdida segura de datos.
