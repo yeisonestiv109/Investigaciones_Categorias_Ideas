@@ -304,3 +304,142 @@ Propuesta del negocio: el formulario pide solo el nombre, la calculadora pide sa
 | Envía la calculadora | entradas y resultado | `calculations` → `leads.status = 'calculo'` |
 | Toca "Quiero agendar" y escribe email y teléfono | `email`, `phone` (normalizados) | `leads` |
 | Reserva (webhook de Cal.com o `pg_cron` sobre Google) | cita + `match_method` | `bookings` → `leads.status = 'agendo'` |
+
+---
+
+## 10. Flujo final acordado: token de ManyChat → nombre + email → calculadora → Google Calendar → cruce por email + cruce manual
+
+### 10.1 Cómo se conecta cada dato
+
+1. **Link con token.** ManyChat llama a `lead-upsert` con el `contact_id`, recibe un token y manda `tudominio.com/calculo?t=<token>`.
+   - **Si no tienes ManyChat Pro** (sin External Request), puedes poner `{{contact_id}}` directo en la URL, con una condición: la página **solo crea filas nuevas**. Nunca sobrescribe datos ni muestra datos guardados. Así, si alguien cambia el número en la URL, lo peor que pasa es que aparece una fila basura, no que se pisa o se filtra la ficha de otra persona.
+2. **Nombre + email + autorización de datos.** Se guardan en `leads`, ligados al token, así que ya sabes de qué contacto de ManyChat es.
+3. **Calculadora.** Las entradas y el resultado se guardan en `calculations`, y `status` pasa a `'calculo'`.
+4. **Google Calendar.** La persona escribe su email en la página de reservas de Google. `pg_cron` trae la cita y la cruza con el lead **por email**.
+5. **Si no cruza**, la cita queda en la cola de cruce manual.
+
+### 10.2 Por qué a veces el email no va a coincidir (y está documentado)
+
+Google dice: *"When you sign in to a Google Account and make an appointment, your booking details are pre-filled"*. O sea, si la persona tiene una sesión de Google abierta, **la página de reservas le rellena su correo de Gmail**, aunque en tu formulario haya puesto otro (por ejemplo Hotmail). [OFICIAL: [Google Calendar: agenda de citas](https://support.google.com/calendar/answer/11608416?hl=en)]
+
+Esa va a ser la causa más común de citas que no cruzan. Tres medidas:
+- Texto encima del calendario: "Revisa que el correo sea el mismo que pusiste en tu diagnóstico".
+- **Teléfono** como campo obligatorio en el formulario de Google, para tener una segunda llave de cruce.
+- Cruce por **cercanía en el tiempo** y **cola manual**.
+
+### 10.3 SQL: columnas extra, cruce automático y cruce manual
+
+```sql
+-- Columnas adicionales sobre el esquema de la sección 3
+alter table leads    add column if not exists name text;
+alter table bookings add column if not exists attendee_email text;
+alter table bookings add column if not exists attendee_phone text;
+alter table bookings add column if not exists booked_at timestamptz;   -- event.created de Google
+alter table bookings add column if not exists matched_by text;         -- 'auto' o el nombre del setter
+alter table bookings add column if not exists matched_at timestamptz;
+
+create index if not exists leads_email_idx on leads (email);
+create index if not exists leads_phone_idx on leads (phone);
+
+-- Normalización: guardar SIEMPRE así desde las funciones
+create or replace function norm_email(e text) returns text
+language sql immutable as $$ select nullif(lower(trim(e)), '') $$;
+
+create or replace function norm_phone(p text) returns text
+language sql immutable as $$
+  -- deja solo dígitos; si son 10 dígitos (celular Colombia) antepone 57
+  select case
+    when length(regexp_replace(coalesce(p,''), '\D', '', 'g')) = 10
+      then '57' || regexp_replace(p, '\D', '', 'g')
+    else nullif(regexp_replace(coalesce(p,''), '\D', '', 'g'), '')
+  end
+$$;
+
+-- Cruce automático de una cita: email → teléfono → ventana de tiempo (solo si hay 1 candidato)
+create or replace function match_booking(p_booking uuid) returns text
+language plpgsql as $$
+declare
+  b bookings%rowtype;
+  v_lead uuid;
+  v_candidates uuid[];
+begin
+  select * into b from bookings where id = p_booking;
+  if b.lead_id is not null then return b.match_method; end if;
+
+  -- 1) email
+  select id into v_lead from leads
+   where email = norm_email(b.attendee_email)
+   order by updated_at desc limit 1;
+  if v_lead is not null then
+    update bookings set lead_id = v_lead, match_method = 'email',
+           matched_by = 'auto', matched_at = now() where id = p_booking;
+    update leads set status = 'agendo', updated_at = now() where id = v_lead;
+    return 'email';
+  end if;
+
+  -- 2) teléfono
+  select id into v_lead from leads
+   where phone = norm_phone(b.attendee_phone)
+   order by updated_at desc limit 1;
+  if v_lead is not null then
+    update bookings set lead_id = v_lead, match_method = 'phone',
+           matched_by = 'auto', matched_at = now() where id = p_booking;
+    update leads set status = 'agendo', updated_at = now() where id = v_lead;
+    return 'phone';
+  end if;
+
+  -- 3) ventana de tiempo: leads que calcularon en los 30 min previos y aún no tienen cita
+  select array_agg(distinct l.id) into v_candidates
+    from leads l
+    join calculations c on c.lead_id = l.id
+   where c.created_at between b.booked_at - interval '30 minutes' and b.booked_at
+     and not exists (select 1 from bookings x where x.lead_id = l.id);
+  if array_length(v_candidates, 1) = 1 then
+    update bookings set lead_id = v_candidates[1], match_method = 'ventana_tiempo',
+           matched_by = 'auto', matched_at = now() where id = p_booking;
+    update leads set status = 'agendo', updated_at = now() where id = v_candidates[1];
+    return 'ventana_tiempo';
+  end if;
+
+  update bookings set match_method = 'ninguno' where id = p_booking;
+  return 'ninguno';
+end $$;
+
+-- Cola para el cruce manual
+create or replace view citas_sin_cruzar as
+select b.id, b.attendee_email, b.attendee_phone, b.start_at, b.booked_at, b.raw->>'summary' as titulo
+  from bookings b
+ where b.lead_id is null and coalesce(b.status, '') <> 'cancelada'
+ order by b.start_at;
+
+-- Candidatos: calcularon y no tienen cita
+create or replace view leads_sin_cita as
+select l.id, l.name, l.email, l.phone, l.manychat_contact_id, max(c.created_at) as ultimo_calculo
+  from leads l
+  join calculations c on c.lead_id = l.id
+ where not exists (select 1 from bookings b where b.lead_id = l.id)
+ group by l.id
+ order by ultimo_calculo desc;
+
+-- Asignación manual (también sirve para corregir un cruce automático equivocado)
+create or replace function assign_booking_manual(p_booking uuid, p_lead uuid, p_who text)
+returns void language plpgsql as $$
+declare v_old uuid;
+begin
+  select lead_id into v_old from bookings where id = p_booking;
+  update bookings set lead_id = p_lead, match_method = 'manual',
+         matched_by = p_who, matched_at = now() where id = p_booking;
+  update leads set status = 'agendo', updated_at = now() where id = p_lead;
+  if v_old is not null and v_old <> p_lead then
+    update leads set status = 'calculo', updated_at = now() where id = v_old;
+  end if;
+end $$;
+```
+
+**Uso diario del setter:** abre `citas_sin_cruzar` y `leads_sin_cita` en el editor de tablas de Supabase y compara nombre, hora y teléfono. Luego asigna con `select assign_booking_manual('<id_cita>', '<id_lead>', 'nombre_setter');`.
+
+### 10.4 Lo que el `pg_cron` debe manejar
+
+- **Cancelaciones y reprogramaciones.** Con sincronización incremental (`syncToken`), la API de Google también devuelve los eventos cancelados, con `status = 'cancelled'`. Actualiza `bookings.status` y usa el `id` del evento como `external_id` único, para no duplicar citas. [OFICIAL: [Google Calendar API: Events](https://developers.google.com/workspace/calendar/api/v3/reference/events)]
+- **Solo citas de la agenda de reservas.** Filtra para no cruzar reuniones internas. Por ejemplo, por el título que Google pone a las citas o usando un calendario secundario dedicado.
+- **Medición semanal:** qué % de citas cruzó por email, por teléfono, por ventana de tiempo y a mano. Si el cruce manual pasa de un nivel que te parezca aceptable, es la señal para pasar a Cal.com (cruce exacto por token, sección 8.2 opción B).
