@@ -1,6 +1,6 @@
 # Definición de variables · Fase 1 (versión vigente)
 
-**Estado:** variables definidas a partir de la investigación 19 (el punto exacto, desde las respuestas del fundador). Reemplaza todas las versiones anteriores.
+**Estado:** variables definidas a partir de la investigación 19 y ajustadas con la voz del cliente (investigación 21). Reemplaza todas las versiones anteriores.
 **Fecha:** octubre de 2026.
 
 ## Lo que ya está decidido
@@ -11,7 +11,9 @@
 | **Raíz** | La gente sabe lo que debe hacer y aun así no lo hace. |
 | **Tarea precisa** | Cumplir cada día lo que uno mismo se propuso. |
 | **Cómo se mide** | Porcentaje de prioridades del día cumplidas, horas de concentración real, hora de levantarse. |
-| **Frase** | Ayudamos a emprendedores y creadores que trabajan sin jefe a que el día les rinda: que cumplan lo que se proponen, y lo vean con datos, en 66 días. |
+| **Dolor (en palabras del cliente)** | "Trabajo mucho y avanzo poco." "No me rinde el día." |
+| **Restricciones de diseño** | Nada que haya que configurar o mantener (medir en 1 minuto al día o menos); alguien a quien reportarle el avance. |
+| **Frase** | Ayudamos a emprendedores y creadores que trabajan sin jefe, y sienten que trabajan mucho y avanzan poco, a que el día les rinda: que cumplan lo que se proponen y vean su avance con datos, sin otra app que mantener y sin estar solos, en 66 días. |
 
 ## Prompt 1
 
