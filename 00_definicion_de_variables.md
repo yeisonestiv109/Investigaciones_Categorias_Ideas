@@ -1,52 +1,51 @@
 # Definición de variables · Fase 1 (versión vigente)
 
-**Estado:** variables construidas a partir del trabajo real del fundador (ver `07_el_problema_que_ya_tengo_en_la_mano.md`). Reemplaza las versiones anteriores, que partían de "productividad personal".
+**Estado:** variables definidas a partir de la investigación 14 (frase de posicionamiento). Reemplaza todas las versiones anteriores.
 **Fecha:** octubre de 2026.
 
-## Cómo se llegó aquí
+## Lo que ya está decidido
 
-| Investigación | Qué dejó |
+| Pieza | Valor |
 |---|---|
-| 01 Dolor común | La IA no rinde lo que uno cree; trabajar duro no garantiza resultados. |
-| 02 Raíz de la frustración | La industria cobra por la promesa, no por el resultado. Medir, sostener y tener algo en juego es lo que funciona. |
-| 03–04 Tareas concretas | Descartadas: tienen al gobierno de por medio, ya están resueltas (cotizaciones) o no encajan con el fundador. |
-| 05–06 Perfil | Te atraen los comunicadores de hábitos con datos (estilo Estivill). Tu evidencia más fuerte es haber vendido algo antes de construirlo. |
-| **09 Diagnóstico de septiembre** | **Cierre del 12,9 %. La razón número uno de no compra es la falta de dinero. La palanca más grande es el cierre; la hipótesis es un diagnóstico previo a la cita.** |
-| **07 Problema en la mano** | **Citas no calificadas en las ventas de ticket alto de una marca personal. Cliente real, datos reales, pago por resultado (3 %).** |
+| **Propósito** | Que la gente deje de pagar por promesas y vea, con datos, que de verdad está cambiando. |
+| **Frase de entrada** | Ayudamos a dueños de pequeños negocios en Colombia que ya usan IA o bots para atender clientes por WhatsApp a saber, con datos, cuántas horas y cuántas ventas les gana (o les hace perder) la IA, y a mejorarlo en 66 días. |
+| **Marca personal** | El fundador midiendo con datos cuánto le ahorra la IA a él (caso 0, 66 días). |
 
-## Variables
+## Variables del playbook
 
 | Variable | Valor |
 |---|---|
-| [CATEGORÍA] para investigar | **Ventas de ticket alto por redes sociales** (embudos con setters y closers en marcas personales e infoproductores) |
-| [CATEGORÍA propia] (fases posteriores) | Candidata: **Citas calificadas** |
-| [PAÍS / REGIÓN] | **Colombia**, con apertura a Latinoamérica hispanohablante |
-| [PERFIL] | Experto de un vertical real (salud, finanzas, inmobiliario, profesionales o B2B) que vende programas, mentorías o servicios de alto valor por Instagram y WhatsApp, ya factura, tiene los prospectos regados y no sabe en qué etapa pierde ventas (ajustado en la investigación 11) |
+| **[CATEGORÍA]** para investigar | **IA conversacional** (alcance: bots y agentes de IA que atienden y venden por WhatsApp en pequeños negocios) |
+| **[PAÍS / REGIÓN]** | **Colombia**, con Latinoamérica hispanohablante como referencia secundaria |
+| **[PERFIL]** | **Dueño de un pequeño negocio (1 a 50 empleados) en Colombia que vende por WhatsApp y ya usa, o está por usar, un bot o agente de IA para atender clientes, pero no sabe si le gana o le hace perder ventas** |
+| [CATEGORÍA propia] (fases posteriores) | Candidatas: **IA medible**, **IA verificable** |
+
+**Por qué "IA conversacional":** son dos palabras, es el término que usa la industria (proveedores, analistas y prensa), y por eso permite encontrar datos. La categoría propia (la que vas a ser dueño) es otra, y se define después con evidencia.
 
 ## Prompt 1: categoría y tendencia
 
 ```
-Actúa como analista de mercado senior. Investiga la categoría «Ventas de ticket alto por redes
-sociales» (embudos de marcas personales e infoproductores que venden programas o mentorías de
-alto valor por Instagram y WhatsApp, con setters y closers) para el mercado de Colombia, con
-Latinoamérica hispanohablante como referencia secundaria (márcala como tal).
+Actúa como analista de mercado senior. Investiga la categoría «IA conversacional» (bots y
+agentes de IA que atienden clientes y venden por WhatsApp en pequeños negocios) para el
+mercado de Colombia, con Latinoamérica hispanohablante como referencia secundaria (márcala
+como tal).
 
 Quiero entender:
-1. Qué está pasando ahora mismo en esta categoría (hechos y señales recientes).
-2. Hacia dónde va la tendencia en los próximos 12–24 meses, incluido el uso de IA para hacer
-   setting y calificar prospectos.
+1. Qué está pasando ahora mismo en esta categoría (hechos y señales recientes), incluido
+   Meta Business Agent, ManyChat, Kommo, Leadsales, Treble y los cambios de precio de
+   WhatsApp de julio de 2025 y octubre de 2026.
+2. Hacia dónde va la tendencia en los próximos 12–24 meses.
 3. Qué tan madura está: naciente, en crecimiento o saturada — con señales concretas. Da UN solo
-   veredicto y dime si llego temprano, a tiempo o tarde.
-4. Los principales players y referentes: plataformas (GoHighLevel, Kommo, ManyChat y otras),
-   agencias de setters y closers, y referentes de ventas de ticket alto en español.
-5. El vocabulario y los términos que usa el mercado (setter, closer, show rate, cash collected,
-   cita calificada, etc.).
-6. Las métricas de referencia de un embudo de ticket alto (tasa de calificación, asistencia a
-   citas, cierre, cobro) y si existen datos públicos confiables.
-7. Si alguien cobra por resultado (comisión o garantía) o casi todos cobran por la promesa.
-8. Qué se hace hoy para precalificar a los prospectos antes de la llamada (formularios,
-   diagnósticos automáticos, puntaje de capacidad de pago, envío a un producto más barato)
-   y si hay evidencia de que eso sube el cierre.
+   veredicto para pequeños negocios y dime si llego temprano, a tiempo o tarde.
+4. Los principales players y referentes (plataformas, agencias e implementadores en Colombia).
+5. El vocabulario y los términos que usa el mercado, incluido lo que buscan los dueños de
+   negocio en Google en Colombia.
+6. Cuántos pequeños negocios en Colombia usan bots o IA en WhatsApp y cuánto pagan al mes.
+7. Si existe alguna forma o herramienta para que un pequeño negocio mida el retorno real del
+   bot o la IA (horas ahorradas, ventas ganadas o perdidas, costo por conversación), o si
+   solo existe para grandes empresas. Este es el punto más importante.
+8. Qué evidencia hay de que los bots hacen perder clientes o ventas (quejas, estudios,
+   abandono de conversaciones).
 
 Distingue hechos de opiniones y cita fuentes cuando puedas. Si algo no se puede verificar,
 dilo. Advierte cuando un dato venga de una empresa que vende en la categoría.
@@ -54,35 +53,36 @@ dilo. Advierte cuando un dato venga de una empresa que vende en la categoría.
 Entrega: un resumen ejecutivo de 1 página + una tabla de «señales de madurez».
 ```
 
-## Prompt 2: voz del cliente (ajustado con la investigación 11)
+## Prompt 2: voz del cliente (después de revisar la salida del 1)
 
 ```
-Actúa como investigador de «voz del cliente» (VoC). Para el perfil «experto de un vertical real
-(salud, finanzas, inmobiliario, profesionales o B2B) que vende programas, mentorías o servicios
-de alto valor por Instagram y WhatsApp» dentro de la categoría «Ventas de ticket alto por redes
-sociales», en Colombia y Latinoamérica hispanohablante, quiero un mapa de su lenguaje real.
+Actúa como investigador de «voz del cliente» (VoC). Para el perfil «dueño de un pequeño
+negocio en Colombia que vende por WhatsApp y usa, o está por usar, un bot o agente de IA para
+atender clientes» dentro de la categoría «IA conversacional», quiero un mapa de su lenguaje
+real.
 
-Basándote en reseñas, foros (Reddit, grupos de Facebook, etc.), comentarios y preguntas
-frecuentes, con prioridad para fuentes en español:
+Basándote en reseñas (tiendas de apps, G2, Capterra, Trustpilot), foros (Reddit, grupos de
+Facebook, etc.), comentarios y preguntas frecuentes, con prioridad para fuentes en español
+de Colombia y después de Latinoamérica:
 1. Sus dolores, en frases textuales (entre comillas).
 2. Sus deseos y aspiraciones.
-3. Sus objeciones y desconfianzas hacia agencias, setters externos, bots y "gurús" de ventas.
+3. Sus objeciones y desconfianzas hacia bots, IA, agencias y plataformas.
 4. Qué soluciones ya probaron y por qué las abandonaron.
-5. Qué los detonó a buscar ayuda.
+5. Qué los detonó a buscar un bot o a quitarlo.
 
 Tengo estas hipótesis. Confírmalas o refútalas con evidencia, y repórtame también lo que las
 contradiga:
-- «Sé mucho de mi tema, pero no sé vender por redes».
-- «Contraté setters o agencias y no funcionó».
-- «Me llegan muchas citas, pero la mayoría no está calificada».
-- «La información de mis prospectos está regada en DM, WhatsApp y hojas de cálculo».
-- «Me da miedo parecer un gurú más».
-- «No sé demostrar con números los resultados de mis clientes».
+- «No sé si el bot me está sirviendo».
+- «Siento que el bot me espanta clientes».
+- «Pago la IA, pero igual sigo respondiendo yo».
+- «Me vendieron el bot como una solución mágica».
+- «No sé cuánto me cuesta cada conversación».
+- «Mis clientes prefieren hablar con una persona».
 
 Agrupa por tema y marca las 5 frases más repetidas. No inventes citas; si no hay evidencia,
-indícalo. Indica el país, el idioma y el vertical de cada cita.
+indícalo. Indica el país, el idioma y el tipo de negocio de cada cita.
 ```
 
 ## Lo que no hace la IA
-- La línea base del embudo del cliente actual (ver la tabla de la investigación 07).
-- Conversaciones con 5 marcas personales o equipos de ventas de ticket alto.
+- Las 10 conversaciones con dueños de pequeños negocios que usan bots o IA en WhatsApp (guion en la investigación 14).
+- Tu caso 0: 66 días midiendo cuánto te ahorra la IA a ti.
