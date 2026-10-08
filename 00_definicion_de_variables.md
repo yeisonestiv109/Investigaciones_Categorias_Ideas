@@ -21,7 +21,7 @@
 | [CATEGORÍA] para investigar | **Ventas de ticket alto por redes sociales** (embudos con setters y closers en marcas personales e infoproductores) |
 | [CATEGORÍA propia] (fases posteriores) | Candidata: **Citas calificadas** |
 | [PAÍS / REGIÓN] | **Colombia**, con apertura a Latinoamérica hispanohablante |
-| [PERFIL] | Marca personal o infoproductor que vende programas o mentorías de ticket alto por Instagram y WhatsApp, con setters y closers, que ya factura, pero tiene citas no calificadas, información regada en hojas de cálculo y mensajes, y no sabe qué contenido le trae ventas |
+| [PERFIL] | Experto de un vertical real (salud, finanzas, inmobiliario, profesionales o B2B) que vende programas, mentorías o servicios de alto valor por Instagram y WhatsApp, ya factura, tiene los prospectos regados y no sabe en qué etapa pierde ventas (ajustado en la investigación 11) |
 
 ## Prompt 1: categoría y tendencia
 
@@ -54,32 +54,33 @@ dilo. Advierte cuando un dato venga de una empresa que vende en la categoría.
 Entrega: un resumen ejecutivo de 1 página + una tabla de «señales de madurez».
 ```
 
-## Prompt 2: voz del cliente (después de revisar la salida del 1)
+## Prompt 2: voz del cliente (ajustado con la investigación 11)
 
 ```
-Actúa como investigador de «voz del cliente» (VoC). Para el perfil «marca personal o
-infoproductor que vende programas de ticket alto por Instagram y WhatsApp con setters y
-closers» dentro de la categoría «Ventas de ticket alto por redes sociales», quiero un mapa de
-su lenguaje real.
+Actúa como investigador de «voz del cliente» (VoC). Para el perfil «experto de un vertical real
+(salud, finanzas, inmobiliario, profesionales o B2B) que vende programas, mentorías o servicios
+de alto valor por Instagram y WhatsApp» dentro de la categoría «Ventas de ticket alto por redes
+sociales», en Colombia y Latinoamérica hispanohablante, quiero un mapa de su lenguaje real.
 
 Basándote en reseñas, foros (Reddit, grupos de Facebook, etc.), comentarios y preguntas
 frecuentes, con prioridad para fuentes en español:
 1. Sus dolores, en frases textuales (entre comillas).
 2. Sus deseos y aspiraciones.
-3. Sus objeciones y desconfianzas hacia agencias, setters externos, bots y software.
+3. Sus objeciones y desconfianzas hacia agencias, setters externos, bots y "gurús" de ventas.
 4. Qué soluciones ya probaron y por qué las abandonaron.
 5. Qué los detonó a buscar ayuda.
 
 Tengo estas hipótesis. Confírmalas o refútalas con evidencia, y repórtame también lo que las
 contradiga:
+- «Sé mucho de mi tema, pero no sé vender por redes».
+- «Contraté setters o agencias y no funcionó».
 - «Me llegan muchas citas, pero la mayoría no está calificada».
-- «Mi closer pierde horas en llamadas con gente que no tiene cómo pagar».
-- «No sé qué contenido me trae las ventas».
 - «La información de mis prospectos está regada en DM, WhatsApp y hojas de cálculo».
-- «Vendo, pero no todo lo vendido se cobra».
+- «Me da miedo parecer un gurú más».
+- «No sé demostrar con números los resultados de mis clientes».
 
 Agrupa por tema y marca las 5 frases más repetidas. No inventes citas; si no hay evidencia,
-indícalo. Indica el país y el idioma de cada cita.
+indícalo. Indica el país, el idioma y el vertical de cada cita.
 ```
 
 ## Lo que no hace la IA
