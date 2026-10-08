@@ -38,7 +38,7 @@ El segundo método es **literalmente tu propósito**: "ver, con datos, que de ve
 > **Cumplir cada día lo que uno mismo se propuso.**
 
 - **Se mide con tres números:** el porcentaje de prioridades del día cumplidas, las horas de concentración real y la hora a la que se levanta.
-- **El dolor es actual:** el tiempo de concentración real cayó al **60 % de la jornada, su punto más bajo en tres años** (ActivTrak 2026: actividad medida de más de 163 000 empleados, no una encuesta). El 55,9 % de los trabajadores tiene dos sesiones de trabajo concentrado o menos a la semana (encuesta de Reclaim, SXSW 2026).
+- **El dolor es actual:** el tiempo de concentración cayó a **su punto más bajo en tres años**, y cada bloque de concentración dura en promedio **13 minutos**, 9 % menos que en 2023 (ActivTrak, marzo 2026: actividad medida de 163 638 empleados entre 2023 y 2025, no una encuesta). *Corrección: la cifra del "60 % de la jornada" que se citó antes viene de un resumen secundario y no se pudo confirmar en la fuente.* El 55,9 % de los trabajadores tiene dos sesiones de trabajo concentrado o menos a la semana (encuesta de Reclaim, SXSW 2026).
 - **Es peor para quien no tiene jefe:** nadie le revisa el día.
 
 **La frase de posicionamiento:**
@@ -84,5 +84,5 @@ El segundo método es **literalmente tu propósito**: "ver, con datos, que de ve
 - [Sheeran y Webb 2016, "The Intention–Behavior Gap"](https://eprints.whiterose.ac.uk/107519/) · [Prestwich et al. 2015, con la mediana del 47 % de Sheeran 2002](https://bpb-us-e1.wpmucdn.com/wp.nyu.edu/dist/c/6235/files/2019/02/prestwich-et-al-2015-implementation-intentions.pdf)
 - [Gollwitzer y Sheeran 2006, metaanálisis de intenciones de implementación](https://kops.uni-konstanz.de/entities/publication/2e749bfb-8533-437c-8203-7e788c910c5f) · [Resumen con la actualización de 2024 (642 pruebas)](https://goalsandprogress.com/implementation-intentions-research/)
 - [Harkin et al. 2016, Psychological Bulletin: registrar el avance promueve el logro de metas](https://eprints.whiterose.ac.uk/91437/)
-- [ActivTrak, State of the Workplace 2026](https://activtrak.com/state-of-the-workplace/) · [Makerstations, estadísticas de distracción 2026](https://makerstations.io/workplace-distraction-statistics) · [Reclaim, encuesta de SXSW 2026](https://reclaim.ai/blog/sxsw-work-trends-report)
+- [ActivTrak, State of the Workplace 2026](https://activtrak.com/state-of-the-workplace/) · [ActivTrak, guía del informe (sesiones de 13 min 7 s)](https://www.activtrak.com/blog/state-of-the-workplace-companion-guide) · [Makerstations, estadísticas de distracción 2026](https://makerstations.io/workplace-distraction-statistics) · [Reclaim, encuesta de SXSW 2026](https://reclaim.ai/blog/sxsw-work-trends-report)
 - Lally 2010 (66 días, de 18 a 254): investigación 02.
