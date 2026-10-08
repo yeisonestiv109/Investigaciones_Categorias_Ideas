@@ -48,7 +48,7 @@ Alcance para el prompt: cómo los emprendedores en Colombia manejan su tiempo, f
 - **La categoría que vas a ser dueño** es el nombre propio de tu posicionamiento. Se define en fases posteriores, ya con evidencia. Hipótesis de dos palabras para ese momento: **Productividad medible**, **Rendimiento medible** o **Diagnóstico productivo**.
 
 ### [PERFIL DE CLIENTE]
-> **Emprendedor en Colombia que ya tiene un negocio en marcha (o una idea en ejecución), trabaja muy duro pero sus ingresos no reflejan su esfuerzo.** No tiene un plan definido y siente que en vez de avanzar retrocede. Está abrumado de información y de cosas nuevas cada día, no usa la IA de forma eficiente, no sabe delegar, y una mala investigación le cuesta tiempo y dinero. Sabe qué tiene que hacer, pero no logra "despegar".
+> **Emprendedor en Colombia que ya factura y usa IA a diario, trabaja muy duro pero sus ingresos no reflejan su esfuerzo.** (Ajustado con el barrido de `01_barrido_dolor_comun.md`.) No tiene un plan definido y siente que en vez de avanzar retrocede. Está abrumado de información y de cosas nuevas cada día, no usa la IA de forma eficiente, no sabe delegar, y una mala investigación le cuesta tiempo y dinero. Sabe qué tiene que hacer, pero no logra "despegar".
 
 ## 5. Riesgos honestos
 
@@ -87,8 +87,10 @@ Quiero entender:
 5. El vocabulario y los términos que usa el mercado, incluyendo lo que se busca en Google
    en Colombia.
 6. Si existe una oferta que mida con números exactos el tiempo y los resultados del
-   emprendedor (horas recuperadas, % del tiempo en tareas que generan ingresos), o si eso
-   es un hueco.
+   emprendedor (horas recuperadas, % del tiempo en tareas que generan ingresos, y si la IA
+   le ahorra tiempo neto o se le va en corregir), o si eso es un hueco. Incluye las
+   mentorías públicas gratuitas (Alcaldía de Bogotá, Cámara de Comercio) y los métodos
+   de auditoría de tiempo (por ejemplo, Buy Back Your Time de Dan Martell).
 7. Quién tiene más capacidad de pagar un acompañamiento de ticket alto: el emprendedor que
    ya factura o el que todavía no vende.
 
@@ -103,7 +105,7 @@ Entrega: un resumen ejecutivo de 1 página + una tabla de «señales de madurez�
 
 ```
 Actúa como investigador de «voz del cliente» (VoC). Para el perfil «emprendedor en Colombia
-con un negocio en marcha que trabaja muy duro pero cuyos ingresos no reflejan su esfuerzo»
+que ya factura y usa IA a diario, trabaja muy duro, pero sus ingresos no reflejan su esfuerzo»
 dentro de la categoría «Productividad emprendedora», quiero un mapa de su lenguaje real.
 
 Basándote en reseñas, foros (Reddit, grupos de Facebook, etc.), comentarios y preguntas
@@ -120,6 +122,7 @@ contradiga:
 - «Sé que la IA me ahorra tiempo, pero no sé cuánto ni si se refleja en mis resultados».
 - «Me abruma tanta información y tantas cosas nuevas cada día».
 - «No sé delegar».
+- «Uso la IA todos los días, pero se me va tiempo corrigiendo lo que hace».
 
 Agrupa por tema y marca las 5 frases más repetidas. No inventes citas; si no hay evidencia,
 indícalo. Indica el país y el idioma de cada cita.
