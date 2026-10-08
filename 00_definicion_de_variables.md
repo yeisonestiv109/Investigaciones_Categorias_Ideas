@@ -91,7 +91,9 @@ Quiero entender:
    le ahorra tiempo neto o se le va en corregir), o si eso es un hueco. Incluye las
    mentorías públicas gratuitas (Alcaldía de Bogotá, Cámara de Comercio) y los métodos
    de auditoría de tiempo (por ejemplo, Buy Back Your Time de Dan Martell).
-7. Quién tiene más capacidad de pagar un acompañamiento de ticket alto: el emprendedor que
+7. Si alguien en la categoría cobra por resultado medido (garantías, pago por resultados)
+   o si casi todos cobran por la promesa (cursos, apps, sesiones).
+8. Quién tiene más capacidad de pagar un acompañamiento de ticket alto: el emprendedor que
    ya factura o el que todavía no vende.
 
 Distingue hechos de opiniones y cita fuentes cuando puedas. Si algo no se puede verificar,
@@ -123,6 +125,8 @@ contradiga:
 - «Me abruma tanta información y tantas cosas nuevas cada día».
 - «No sé delegar».
 - «Uso la IA todos los días, pero se me va tiempo corrigiendo lo que hace».
+- «Llevo años comprando cosas que me prometen tiempo (apps, cursos, métodos, IA) y el
+  tiempo nunca vuelve» (frustración raíz, ver `02_raiz_de_la_frustracion.md`).
 
 Agrupa por tema y marca las 5 frases más repetidas. No inventes citas; si no hay evidencia,
 indícalo. Indica el país y el idioma de cada cita.
