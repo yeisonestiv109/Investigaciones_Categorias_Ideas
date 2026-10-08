@@ -11,6 +11,7 @@
 | 02 Raíz de la frustración | La industria cobra por la promesa, no por el resultado. Medir, sostener y tener algo en juego es lo que funciona. |
 | 03–04 Tareas concretas | Descartadas: tienen al gobierno de por medio, ya están resueltas (cotizaciones) o no encajan con el fundador. |
 | 05–06 Perfil | Te atraen los comunicadores de hábitos con datos (estilo Estivill). Tu evidencia más fuerte es haber vendido algo antes de construirlo. |
+| **09 Diagnóstico de septiembre** | **Cierre del 12,9 %. La razón número uno de no compra es la falta de dinero. La palanca más grande es el cierre; la hipótesis es un diagnóstico previo a la cita.** |
 | **07 Problema en la mano** | **Citas no calificadas en las ventas de ticket alto de una marca personal. Cliente real, datos reales, pago por resultado (3 %).** |
 
 ## Variables
@@ -43,6 +44,9 @@ Quiero entender:
 6. Las métricas de referencia de un embudo de ticket alto (tasa de calificación, asistencia a
    citas, cierre, cobro) y si existen datos públicos confiables.
 7. Si alguien cobra por resultado (comisión o garantía) o casi todos cobran por la promesa.
+8. Qué se hace hoy para precalificar a los prospectos antes de la llamada (formularios,
+   diagnósticos automáticos, puntaje de capacidad de pago, envío a un producto más barato)
+   y si hay evidencia de que eso sube el cierre.
 
 Distingue hechos de opiniones y cita fuentes cuando puedas. Si algo no se puede verificar,
 dilo. Advierte cuando un dato venga de una empresa que vende en la categoría.
